@@ -7,6 +7,7 @@ import (
 	"log"
 	"net/http"
 	"oceanLearn/common"
+	"oceanLearn/dto"
 	"oceanLearn/model"
 	"oceanLearn/util"
 )
@@ -15,6 +16,14 @@ import (
   用户注册
 */
 func Register(c *gin.Context) {
+	//使用map获取请求的参数
+	//var requestMap = make(map[string]string)
+	//json.NewDecoder(c.Request.Body).Decode(&requestMap)
+	
+	//获取参数
+	//var requestUser = model.User{}
+	//c.ShouldBindJSON(&requestUser)
+	
 	// 获取参数
 	DB := common.GetDB()
 	name := c.PostForm("name")
@@ -103,7 +112,12 @@ func Login(c *gin.Context) {
 		return
 	}
 	//发放token
-	token := "111"
+	token,err := common.ReleaseToken(userInfo)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError,gin.H{"code":500,"msg":"系统异常"})
+		log.Printf("token generate error : %v", err)
+		return
+	}
 	c.JSON(http.StatusOK, gin.H{"code": 200, "msg": "登陆成功", "data": gin.H{"token": token}})
 	return
 
@@ -128,4 +142,13 @@ func isPhoneExist(db *gorm.DB, phone string) bool {
 		return true
 	}
 	return false
+}
+
+/**
+
+ */
+func Info(c *gin.Context)  {
+	user,_ := c.Get("user")
+	c.JSON(http.StatusOK,gin.H{"code":200,"data":gin.H{"user":dto.ToUserDto(user.(model.User))}})
+	
 }

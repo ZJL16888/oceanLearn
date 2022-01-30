@@ -4,19 +4,37 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/spf13/viper"
 	"oceanLearn/common"
+	"os"
 )
 
 
 
 func main() {
+	InitConfig()
 	db := common.InitDB()
 	defer db.Close()
 
 	r := gin.Default()
 	r = CollectRoute(r)
-	panic(r.Run(":8086"))
+	port := viper.GetString("server.port")
+	fmt.Println("port")
+	fmt.Println(port)
+	if port != "" {
+		panic(r.Run(":"+port))
+	}
+	panic(r.Run())
 	fmt.Println("helloworld")
 }
 
+func InitConfig()  {
+	workDir,_ := os.Getwd()
+	viper.SetConfigName("application")
+	viper.SetConfigType("yml")
+	viper.AddConfigPath(workDir + "/config")
+	err := viper.ReadInConfig()
+	if err != nil {
+	}
+}
 

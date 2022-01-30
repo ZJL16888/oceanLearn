@@ -1,7 +1,9 @@
 package common
 
 import (
+	"fmt"
 	"github.com/jinzhu/gorm"
+	"github.com/spf13/viper"
 	"oceanLearn/model"
 )
 
@@ -11,7 +13,9 @@ var DB *gorm.DB
 连接数据库
 */
 func InitDB() *gorm.DB {
-	driverName := "mysql"
+	driverName := viper.GetString("datasource.driverName")
+	fmt.Println("driverName")
+	fmt.Println(driverName)
 	//host := "localhost"
 	//port := "3306"
 	//database := "ginessntial"
@@ -27,7 +31,7 @@ func InitDB() *gorm.DB {
 	//	database,
 	//	charset)
 	//db, err := gorm.Open(driverName, "user:password@/dbname?charset=utf8&parseTime=True&loc=Local")
-	db, err := gorm.Open(driverName, "root:@/ginessntial?charset=utf8&parseTime=True&loc=Local")
+	db, err := gorm.Open("mysql", "root:@/ginessntial?charset=utf8&parseTime=True&loc=Local")
 
 	//db, err := gorm.Open(driverName, args)
 	if err != nil {
